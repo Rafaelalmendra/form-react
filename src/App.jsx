@@ -1,4 +1,6 @@
-import { FomularioDeCadastro } from "./components/FormularioDeCadastro";
+import { FormularioDeCadastro } from "./components/FormularioDeCadastro";
+import { validarCPF, validarSenha } from "./models/Cadastro";
+import { ValidacoesCadastro } from "./contexts/ValidacoesCadastro";
 
 import { Container, Typography } from '@material-ui/core';
 
@@ -6,19 +8,13 @@ function aoEnviarForm(dados) {
   console.log(dados)
 }
 
-function validarCPF(cpf) {
-  if(cpf.length !== 11) {
-    return {valido: false, texto: "CPF deve ter 11 dígitos"}
-  } else {
-    return {valido: true, texto: ""}
-  }
-}
-
 function App() {
   return (
-    <Container maxWidth='sm' align='center'>
+    <Container maxWidth='sm'>
       <Typography align='center' variant='h3'>Formulário de cadastro</Typography>
-      <FomularioDeCadastro aoEnviar={aoEnviarForm} validarCPF={validarCPF}/>
+      <ValidacoesCadastro.Provider value={{cpf: validarCPF, senha: validarSenha}}>
+        <FormularioDeCadastro aoEnviar={aoEnviarForm}/>
+      </ValidacoesCadastro.Provider>
     </Container>
   );
 }

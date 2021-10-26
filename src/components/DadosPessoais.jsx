@@ -1,21 +1,25 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
+import { ValidacoesCadastro } from '../contexts/ValidacoesCadastro';
+import { useErros } from '../hooks/useErros';
+
 import { Button, TextField, Switch, FormControlLabel, Container } from '@material-ui/core';
 
-import './style.css'
-
-export function FomularioDeCadastro({aoEnviar, validarCPF}) {
+export function DadosPessoais({aoEnviar}) {
   const [ nome, setNome ] = useState('')
   const [ sobrenome, setSobrenome ] = useState('')
   const [ cpf, setCpf ] = useState('')
   const [ promocoes, setPromocoes ] = useState(false)
   const [ novidades, setNovidades ] = useState(false)
-  const [erros, setErros] = useState({cpf:{valido:true, texto:""}})
+  const validacoes = useContext(ValidacoesCadastro)
+  const [erros, validarCampos, possoEnviar] = useErros(validacoes)
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault()
-        aoEnviar({nome, sobrenome, cpf, promocoes, novidades})
+        if(possoEnviar()) {
+          aoEnviar({nome, sobrenome, cpf, promocoes, novidades})
+        }
       }}
     >
       <TextField
@@ -28,6 +32,7 @@ export function FomularioDeCadastro({aoEnviar, validarCPF}) {
         variant="outlined"
         margin="normal"
         fullWidth
+        required
       />
 
       <TextField
@@ -40,24 +45,24 @@ export function FomularioDeCadastro({aoEnviar, validarCPF}) {
         variant="outlined"
         margin="normal"
         fullWidth
+        required
       />
 
       <TextField
         value={cpf}
         error={!erros.cpf.valido}
-        onBlur={(event) => {
-          const ehValido = validarCPF(event.target.value)
-          setErros({cpf: ehValido})
-        }}
+        onBlur={validarCampos}
         helperText={erros.cpf.texto}
         onChange={(event) => {
           setCpf(event.target.value)
         }}
+        name='cpf'
         id="cpf"
         label="CPF"
         variant="outlined"
         margin='normal'
         fullWidth
+        required
       />
 
       <Container align='center'>
@@ -92,7 +97,7 @@ export function FomularioDeCadastro({aoEnviar, validarCPF}) {
         color="primary"
         fullWidth
       >
-        Cadastrar
+        Próximo
       </Button>
     </form>
   )
